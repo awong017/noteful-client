@@ -1,0 +1,34 @@
+.add-note {
+    color: #bdbdbd;;
+    font-size: 125%;
+}
+
+/* button {
+    background-color: #cacaca;
+    border-radius: 30px;
+    border: 0;
+    color: black;
+    font-size: 12px;
+    font-weight: bold;
+    height: 60px;
+    padding: 8px;
+    text-align: center;
+    text-decoration: none;
+    width: 60px;
+  }
+  
+button:hover {
+    cursor: pointer;
+  } */
+
+.text {
+    display: block;
+    margin-bottom: 25px;
+}
+
+.content {
+    display: block;
+    margin-bottom: 25px;
+    width: 500px;
+    height: 500px;
+}

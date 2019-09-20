@@ -1,0 +1,25 @@
+.add-folder {
+    margin-top: 50px;
+    color: #bdbdbd;
+    font-size: 125%;
+}
+
+button {
+    background-color: #cacaca;
+    border-radius: 30px;
+    border: 0;
+    color: black;
+    display: inline-block;
+    font-size: 12px;
+    font-weight: bold;
+    height: 60px;
+    padding: 8px;
+    text-align: center;
+    text-decoration: none;
+    width: 60px;
+    margin-left: 20px;
+  }
+  
+  button:hover {
+    cursor: pointer;
+  }
