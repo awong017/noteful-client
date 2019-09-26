@@ -19,7 +19,14 @@ button {
     width: 60px;
     margin-left: 20px;
   }
+
+  .error {
+    font-size: 12px;
+    color: red;
+  }
   
   button:hover {
     cursor: pointer;
+    color: white;
+    background-color: green;
   }

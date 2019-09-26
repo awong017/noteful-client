@@ -3,7 +3,6 @@ import Note from '../Note/Note'
 import ApiContext from '../ApiContext'
 import { findNote } from '../notes-helpers'
 import './NotePageMain.css'
-import AddNote from '../AddNote/AddNote';
 
 export default class NotePageMain extends React.Component {
   static defaultProps = {
@@ -34,7 +33,6 @@ export default class NotePageMain extends React.Component {
             <p key={i}>{para}</p>
           )}
         </div>
-        <AddNote/>
       </section>
     )
   }

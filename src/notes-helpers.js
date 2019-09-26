@@ -6,8 +6,6 @@ export const findNote = (notes=[], noteId) =>
   notes.find(note => note.id === noteId)
 
 export const getNotesForFolder = (notes=[], folderId) => (
-  // console.log(typeof notes[0].folderId)
-  // console.log(typeof folderId)
 
   (!folderId)
     ? notes

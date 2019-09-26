@@ -1,33 +1,43 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import FolderMenu from '../FolderMenu/FolderMenu';
 import './AddNote.css'
 
 class AddNote extends React.Component {
 
   constructor(props) {
     super(props);
+    
     this.nameInput = React.createRef();
+    this.contentInput = React.createRef();
     this.folderInput = React.createRef();
-  }
-
-  validateFolder = (event, folder) => {
-    event.preventDefault();
-
-    if(typeof folder !== 'number') {
-      return "Folder must be a number";
-    }
   }
 
   render() {
     return (
         <form className='add-note'>
+
             <label>Note Name: </label>
             <input type='text' className='text' ref={this.nameInput}></input>
+            <div className='error'>{this.props.noteNameError}</div>
+
+            <label>Content:</label>
+            <textarea className='content' ref={this.contentInput}></textarea>
+            <div className='error'>{this.props.noteContentError}</div>
+
             <label>Folder: </label>
-            <input type='text' className='text' ref={this.folderInput}></input>
-            <button onClick={(e) => this.props.handleAddNote(e, this.nameInput, this.folderInput)}
+            <select ref={this.folderInput}>
+              {this.props.folders.map(folder =>
+                <FolderMenu
+                  name={folder.name}
+                  id={folder.id}
+                />
+              )}
+            </select>
+            <div className='error'>{this.props.noteFolderError}</div>
+            <button onClick={(e) => this.props.handleAddNote(e, this.nameInput, this.contentInput, this.folderInput)}
             >
-              Add
+              Add Note
             </button>
         </form>
     )

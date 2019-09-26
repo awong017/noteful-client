@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Route, Link} from 'react-router-dom';
+import {Route, Link, withRouter} from 'react-router-dom';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import NoteListNav from '../NoteListNav/NoteListNav';
 import NotePageNav from '../NotePageNav/NotePageNav';
@@ -12,50 +12,108 @@ import config from '../config';
 import './App.css';
 
 class App extends Component {
+
     state = {
         notes: [],
         folders: [],
         idNoteCount: 1,
-        idFolderCount: 1
+        idFolderCount: 1,
+        folderNameError: "",
+        noteNameError: "",
+        noteContentError: "",
+        noteFolderError: "",
     };
 
-  handleAddFolder = (event, folderName) => {
-    event.preventDefault()
+    handleAddFolder = (event, folderName) => {
+        event.preventDefault()
 
-    const folder = {
-        id: this.state.idFolderCount,
-        name: folderName
-      }
+        for(let i=0; i<this.state.folders.length; i++){
+            if (folderName = this.state.folders[i].name) {
+                this.setState({
+                    folderNameError: "Folder name already exists"
+                })
+            }
+        } 
 
-    this.setState((prevState) => {
-        prevState.folders.push(folder)
-    })
+        if (!folderName) {
+            this.setState({
+                folderNameError: "Invalid folder name"
+            })
+        }
+        else
+        {
+            this.setState({
+                folderNameError: ""
+            })
 
-    this.setState((prevState) => {
-        return {idFolderCount: prevState.idFolderCount + 1};
-      })
-  }
+            const folder = {
+                id: this.state.idFolderCount,
+                name: folderName
+            }
 
-  handleAddNote = (event, noteName, noteFolder) => {
-    event.preventDefault();
+            this.setState((prevState) => {
+                prevState.folders.push(folder)
+            })
 
-    const note = {
-        id: this.state.idNoteCount,
-        name: noteName.current.value,
-        folderId: noteFolder.current.value,
-        modified: Date.now()
+            this.setState((prevState) => {
+                return {idFolderCount: prevState.idFolderCount + 1};
+            })
+            this.props.history.push('/');
+        }
     }
 
-    this.setState((prevState) => {
-        prevState.notes.push(note)
-    })
+  handleAddNote = (event, noteName, noteContent, noteFolder) => {
+    event.preventDefault()
 
-    this.setState((prevState) => {
-        return {idNoteCount: prevState.idNoteCount + 1};
-    })
+    if (!noteName.current.value) {
+        this.setState({
+            noteNameError: "Invalid note name"
+        })
+    }
+
+    else if (!noteContent.current.value) {
+        this.setState({
+            noteContentError: "Missing content"
+        })
+    }
+
+    else if (!noteFolder.current.value) {
+        this.setState({
+            noteFolderError: "Please create folder"
+        })
+    }
+
+    else
+    {
+        const note = {
+            id: this.state.idNoteCount,
+            name: noteName.current.value,
+            content: noteContent.current.value,
+            folderId: noteFolder.current.value,
+            modified: Date.now()
+        }
+
+        this.setState((prevState) => {
+            prevState.notes.push(note)
+        })
+
+        this.setState((prevState) => {
+            return {idNoteCount: prevState.idNoteCount + 1};
+        })
+        this.props.history.push('/');
+    }
 }
-  
 
+    handleAddButton = () => {
+        this.setState({
+            folderNameError: "",
+            noteNameError: "",
+            noteNameError: "",
+            noteContentError: "",
+            noteFolderError: ""
+        })
+    }
+  
     componentDidMount() {
         Promise.all([
             fetch(`${config.API_ENDPOINT}/notes`),
@@ -91,19 +149,27 @@ class App extends Component {
                         exact
                         key={path}
                         path={path}
-                        component={NoteListNav}
+                        render={props => <NoteListNav {...props} handleAddButton={this.handleAddButton} notes={this.state.notes} />}
                     />
                 ))}
                 <Route path="/note/:noteId" component={NotePageNav} />
                 <Route path="/add-folder" component={NotePageNav} />
                 <Route 
                     path="/add-folder"
-                    render={props => <AddFolder {...props} handleAddFolder={this.handleAddFolder} />}
+                    render={props => <AddFolder {...props} 
+                        handleAddFolder={this.handleAddFolder} 
+                        folderNameError={this.state.folderNameError} />}
                     />
                 <Route path="/add-note" component={NotePageNav} />
                 <Route 
                     path="/add-note"
-                    render={props => <AddNote {...props} handleAddNote={this.handleAddNote}/>}
+                    render={props => <AddNote {...props} 
+                        handleAddNote={this.handleAddNote} 
+                        noteNameError={this.state.noteNameError}
+                        noteContentError={this.state.noteContentError}
+                        noteFolderError={this.state.noteFolderError}
+                        folders={this.state.folders}
+                    />}
                  />
             </>
         );
@@ -117,7 +183,7 @@ class App extends Component {
                         exact
                         key={path}
                         path={path}
-                        component={NoteListMain}
+                        render = {props => <NoteListMain {...props} handleAddButton={this.handleAddButton} />}
                     />
                 ))}
                 <Route path="/note/:noteId" component={NotePageMain} />
@@ -148,4 +214,4 @@ class App extends Component {
     }
 }
 
-export default App;
+export default withRouter(App);
