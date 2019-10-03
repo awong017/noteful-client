@@ -1,5 +1,4 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
 import FolderMenu from '../FolderMenu/FolderMenu';
 import './AddNote.css'
 

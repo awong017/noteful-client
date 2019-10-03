@@ -27,14 +27,6 @@ class App extends Component {
     handleAddFolder = (event, folderName) => {
         event.preventDefault()
 
-        for(let i=0; i<this.state.folders.length; i++){
-            if (folderName = this.state.folders[i].name) {
-                this.setState({
-                    folderNameError: "Folder name already exists"
-                })
-            }
-        } 
-
         if (!folderName) {
             this.setState({
                 folderNameError: "Invalid folder name"
@@ -89,7 +81,7 @@ class App extends Component {
             id: this.state.idNoteCount,
             name: noteName.current.value,
             content: noteContent.current.value,
-            folderId: noteFolder.current.value,
+            folderId: parseInt(noteFolder.current.value),
             modified: Date.now()
         }
 
@@ -116,8 +108,8 @@ class App extends Component {
   
     componentDidMount() {
         Promise.all([
-            fetch(`${config.API_ENDPOINT}/notes`),
-            fetch(`${config.API_ENDPOINT}/folders`)
+            fetch(`${config.API_ENDPOINT}/api/notes`),
+            fetch(`${config.API_ENDPOINT}/api/folders`)
         ])
             .then(([notesRes, foldersRes]) => {
                 if (!notesRes.ok)
@@ -149,7 +141,7 @@ class App extends Component {
                         exact
                         key={path}
                         path={path}
-                        render={props => <NoteListNav {...props} handleAddButton={this.handleAddButton} notes={this.state.notes} />}
+                        render={props => <NoteListNav {...props} handleAddButton={this.handleAddButton} notes={this.state.notes} folders={this.state.folders}/>}
                     />
                 ))}
                 <Route path="/note/:noteId" component={NotePageNav} />
@@ -183,10 +175,12 @@ class App extends Component {
                         exact
                         key={path}
                         path={path}
-                        render = {props => <NoteListMain {...props} handleAddButton={this.handleAddButton} />}
+                        render = {props => <NoteListMain {...props} handleAddButton={this.handleAddButton} notes={this.state.notes}/>}
                     />
                 ))}
-                <Route path="/note/:noteId" component={NotePageMain} />
+                <Route path="/note/:noteId"
+                render = {props => <NotePageMain {...props} folders={this.state.folders} notes={this.state.notes}/>}
+                 />
             </>
         );
     }

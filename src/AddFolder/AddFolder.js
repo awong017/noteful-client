@@ -1,8 +1,6 @@
 import React from 'react'
 import ApiContext from '../ApiContext';
 import './AddFolder.css';
-import { Link } from 'react-router-dom';
-import CircleButton from '../CircleButton/CircleButton';
 
 class AddFolder extends React.Component {
   static contextType = ApiContext;
