@@ -17,7 +17,7 @@ export default class NoteListMain extends React.Component {
 
   render() {
     const { folderId } = this.props.match.params
-    const { notes=[] } = this.context
+    const { notes=[], addButton } = this.context
     const notesForFolder = getNotesForFolder(notes, folderId)
 
     return (
@@ -38,7 +38,7 @@ export default class NoteListMain extends React.Component {
             tag={Link}
             to='/add-note'
             type='button'
-            onClick={() => this.props.handleAddButton()}
+            onClick={() => addButton()}
             className='NoteListMain__add-note-button'
           >
             <FontAwesomeIcon icon='plus' />

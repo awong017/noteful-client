@@ -81,7 +81,7 @@ class App extends Component {
             id: this.state.idNoteCount,
             name: noteName.current.value,
             content: noteContent.current.value,
-            folderId: parseInt(noteFolder.current.value),
+            folderId: (noteFolder.current.value),
             modified: Date.now()
         }
 
@@ -100,32 +100,31 @@ class App extends Component {
         this.setState({
             folderNameError: "",
             noteNameError: "",
-            noteNameError: "",
             noteContentError: "",
             noteFolderError: ""
         })
     }
   
-    componentDidMount() {
-        Promise.all([
-            fetch(`${config.API_ENDPOINT}/api/notes`),
-            fetch(`${config.API_ENDPOINT}/api/folders`)
-        ])
-            .then(([notesRes, foldersRes]) => {
-                if (!notesRes.ok)
-                    return notesRes.json().then(e => Promise.reject(e));
-                if (!foldersRes.ok)
-                    return foldersRes.json().then(e => Promise.reject(e));
+    // componentDidMount() {
+    //     Promise.all([
+    //         fetch(`${config.API_ENDPOINT}/api/notes`),
+    //         fetch(`${config.API_ENDPOINT}/api/folders`)
+    //     ])
+    //         .then(([notesRes, foldersRes]) => {
+    //             if (!notesRes.ok)
+    //                 return notesRes.json().then(e => Promise.reject(e));
+    //             if (!foldersRes.ok)
+    //                 return foldersRes.json().then(e => Promise.reject(e));
 
-                return Promise.all([notesRes.json(), foldersRes.json()]);
-            })
-            .then(([notes, folders]) => {
-                this.setState({notes, folders});
-            })
-            .catch(error => {
-                console.error({error});
-            });
-    }
+    //             return Promise.all([notesRes.json(), foldersRes.json()]);
+    //         })
+    //         .then(([notes, folders]) => {
+    //             this.setState({notes, folders});
+    //         })
+    //         .catch(error => {
+    //             console.error({error});
+    //         });
+    // }
 
     handleDeleteNote = noteId => {
         this.setState({
@@ -141,28 +140,14 @@ class App extends Component {
                         exact
                         key={path}
                         path={path}
-                        render={props => <NoteListNav {...props} handleAddButton={this.handleAddButton} notes={this.state.notes} folders={this.state.folders}/>}
+                        component={NoteListNav}
                     />
                 ))}
                 <Route path="/note/:noteId" component={NotePageNav} />
                 <Route path="/add-folder" component={NotePageNav} />
-                <Route 
-                    path="/add-folder"
-                    render={props => <AddFolder {...props} 
-                        handleAddFolder={this.handleAddFolder} 
-                        folderNameError={this.state.folderNameError} />}
-                    />
+                <Route path="/add-folder" component={AddFolder} />
                 <Route path="/add-note" component={NotePageNav} />
-                <Route 
-                    path="/add-note"
-                    render={props => <AddNote {...props} 
-                        handleAddNote={this.handleAddNote} 
-                        noteNameError={this.state.noteNameError}
-                        noteContentError={this.state.noteContentError}
-                        noteFolderError={this.state.noteFolderError}
-                        folders={this.state.folders}
-                    />}
-                 />
+                <Route path="/add-note" component={AddNote} />
             </>
         );
     }
@@ -175,12 +160,10 @@ class App extends Component {
                         exact
                         key={path}
                         path={path}
-                        render = {props => <NoteListMain {...props} handleAddButton={this.handleAddButton} notes={this.state.notes}/>}
+                        component={NoteListMain}
                     />
                 ))}
-                <Route path="/note/:noteId"
-                render = {props => <NotePageMain {...props} folders={this.state.folders} notes={this.state.notes}/>}
-                 />
+                <Route path="/note/:noteId" component={NotePageMain} />
             </>
         );
     }
@@ -189,7 +172,14 @@ class App extends Component {
         const value = {
             notes: this.state.notes,
             folders: this.state.folders,
-            deleteNote: this.handleDeleteNote
+            folderNameError: this.state.folderNameError,
+            noteNameError: this.state.noteNameError,
+            noteContentError: this.state.noteContentError,
+            noteFolderError: this.state.noteFolderError,
+            deleteNote: this.handleDeleteNote,
+            addNote: this.handleAddNote,
+            addFolder: this.handleAddFolder,
+            addButton: this.handleAddButton
         };
         return (
             <ApiContext.Provider value={value}>

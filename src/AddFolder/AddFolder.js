@@ -16,14 +16,14 @@ class AddFolder extends React.Component {
   }
 
   render() {
+    const { addFolder, folderNameError } = this.context;
+
     return (
-        <form className='add-folder'>
+        <form onSubmit={(e) => addFolder(e, this.state.name)} className='add-folder'>
             <label>Folder Name: </label>
             <input type='text' name='folderName' id='folderName' className='folderName' onChange={e => this.updateName(e.target.value)}></input>
-            <div className='error'>{this.props.folderNameError}</div>
-            <button onClick={(e) => this.props.handleAddFolder(e, this.state.name)}>
-              Add
-            </button>
+            <div className='error'>{folderNameError}</div>
+            <input type='submit'/>
         </form>
     )
   }

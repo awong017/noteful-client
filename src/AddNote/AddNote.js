@@ -1,8 +1,10 @@
 import React from 'react'
 import FolderMenu from '../FolderMenu/FolderMenu';
+import ApiContext from '../ApiContext';
 import './AddNote.css'
 
 class AddNote extends React.Component {
+  static contextType = ApiContext;
 
   constructor(props) {
     super(props);
@@ -13,31 +15,31 @@ class AddNote extends React.Component {
   }
 
   render() {
+
+    const { addNote, noteNameError, noteContentError, noteFolderError, folders } = this.context;
+
     return (
-        <form className='add-note'>
+        <form onSubmit={(e) => addNote(e, this.nameInput, this.contentInput, this.folderInput)} className='add-note'>
 
             <label>Note Name: </label>
             <input type='text' className='text' ref={this.nameInput}></input>
-            <div className='error'>{this.props.noteNameError}</div>
+            <div className='error'>{noteNameError}</div>
 
             <label>Content:</label>
             <textarea className='content' ref={this.contentInput}></textarea>
-            <div className='error'>{this.props.noteContentError}</div>
+            <div className='error'>{noteContentError}</div>
 
             <label>Folder: </label>
             <select ref={this.folderInput}>
-              {this.props.folders.map(folder =>
+              {folders.map(folder =>
                 <FolderMenu
                   name={folder.name}
                   id={folder.id}
                 />
               )}
             </select>
-            <div className='error'>{this.props.noteFolderError}</div>
-            <button onClick={(e) => this.props.handleAddNote(e, this.nameInput, this.contentInput, this.folderInput)}
-            >
-              Add Note
-            </button>
+            <div className='error'>{noteFolderError}</div>
+            <input type='submit'/>
         </form>
     )
   }
