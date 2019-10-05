@@ -9,6 +9,7 @@ import AddFolder from '../AddFolder/AddFolder';
 import AddNote from '../AddNote/AddNote';
 import ApiContext from '../ApiContext';
 import config from '../config';
+import uuid from 'uuid/v4';
 import './App.css';
 
 class App extends Component {
@@ -16,8 +17,6 @@ class App extends Component {
     state = {
         notes: [],
         folders: [],
-        idNoteCount: 1,
-        idFolderCount: 1,
         folderNameError: "",
         noteNameError: "",
         noteContentError: "",
@@ -39,62 +38,91 @@ class App extends Component {
             })
 
             const folder = {
-                id: this.state.idFolderCount,
-                name: folderName
+                "id": uuid(),
+                "name": folderName
             }
 
             this.setState((prevState) => {
                 prevState.folders.push(folder)
             })
 
-            this.setState((prevState) => {
-                return {idFolderCount: prevState.idFolderCount + 1};
-            })
+            const url = config.API_ENDPOINT + '/folders';
+            const options ={
+                method: 'POST',
+                body: JSON.stringify(folder),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            };
+
+            fetch(url, options)
+                .then(res => {
+                    if(!res.ok) {
+                        throw new Error('Something went wrong, please try again later');
+                    }
+                    return res.json();
+                })
+
             this.props.history.push('/');
         }
     }
 
-  handleAddNote = (event, noteName, noteContent, noteFolder) => {
-    event.preventDefault()
-
-    if (!noteName.current.value) {
-        this.setState({
-            noteNameError: "Invalid note name"
-        })
-    }
-
-    else if (!noteContent.current.value) {
-        this.setState({
-            noteContentError: "Missing content"
-        })
-    }
-
-    else if (!noteFolder.current.value) {
-        this.setState({
-            noteFolderError: "Please create folder"
-        })
-    }
-
-    else
-    {
-        const note = {
-            id: this.state.idNoteCount,
-            name: noteName.current.value,
-            content: noteContent.current.value,
-            folderId: (noteFolder.current.value),
-            modified: Date.now()
+    handleAddNote = (event, noteName, noteContent, noteFolder) => {
+        event.preventDefault()
+    
+        if (!noteName) {
+            this.setState({
+                noteNameError: "Invalid note name"
+            })
         }
+    
+        else if (!noteContent) {
+            this.setState({
+                noteContentError: "Missing content"
+            })
+        }
+    
+        else if (!noteFolder) {
+            this.setState({
+                noteFolderError: "Please select folder. If no folders are created, please create one"
+            })
+        }
+    
+        else
+        {
+            const note = {
+                "id": uuid(),
+                "name": noteName,
+                "content": noteContent,
+                "folderId": noteFolder,
+                "modified": Date.now()
+            }
+    
+            this.setState((prevState) => {
+                prevState.notes.push(note)
+            })
 
-        this.setState((prevState) => {
-            prevState.notes.push(note)
-        })
+            const url = config.API_ENDPOINT + '/notes';
+            const options ={
+                method: 'POST',
+                body: JSON.stringify(note),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            };
 
-        this.setState((prevState) => {
-            return {idNoteCount: prevState.idNoteCount + 1};
-        })
-        this.props.history.push('/');
+            fetch(url, options)
+                .then(res => {
+                    if(!res.ok) {
+                        throw new Error('Something went wrong, please try again later');
+                    }
+                    return res.json();
+                })
+
+            this.props.history.push('/');
+        }
+        console.log('Notes: ', this.state.notes)
     }
-}
 
     handleAddButton = () => {
         this.setState({
@@ -105,26 +133,26 @@ class App extends Component {
         })
     }
   
-    // componentDidMount() {
-    //     Promise.all([
-    //         fetch(`${config.API_ENDPOINT}/api/notes`),
-    //         fetch(`${config.API_ENDPOINT}/api/folders`)
-    //     ])
-    //         .then(([notesRes, foldersRes]) => {
-    //             if (!notesRes.ok)
-    //                 return notesRes.json().then(e => Promise.reject(e));
-    //             if (!foldersRes.ok)
-    //                 return foldersRes.json().then(e => Promise.reject(e));
+    componentDidMount() {
+        Promise.all([
+            fetch(`${config.API_ENDPOINT}/notes`),
+            fetch(`${config.API_ENDPOINT}/folders`)
+        ])
+            .then(([notesRes, foldersRes]) => {
+                if (!notesRes.ok)
+                    return notesRes.json().then(e => Promise.reject(e));
+                if (!foldersRes.ok)
+                    return foldersRes.json().then(e => Promise.reject(e));
 
-    //             return Promise.all([notesRes.json(), foldersRes.json()]);
-    //         })
-    //         .then(([notes, folders]) => {
-    //             this.setState({notes, folders});
-    //         })
-    //         .catch(error => {
-    //             console.error({error});
-    //         });
-    // }
+                return Promise.all([notesRes.json(), foldersRes.json()]);
+            })
+            .then(([notes, folders]) => {
+                this.setState({notes, folders});
+            })
+            .catch(error => {
+                console.error({error});
+            });
+    }
 
     handleDeleteNote = noteId => {
         this.setState({

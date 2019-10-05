@@ -6,31 +6,37 @@ import './AddNote.css'
 class AddNote extends React.Component {
   static contextType = ApiContext;
 
-  constructor(props) {
-    super(props);
-    
-    this.nameInput = React.createRef();
-    this.contentInput = React.createRef();
-    this.folderInput = React.createRef();
+  state = {
+    error: null
+  };
+
+  updateName = (name, content, folder) => {
+    this.setState({
+      name: name,
+      content: content,
+      folder: folder
+    })
   }
 
   render() {
 
     const { addNote, noteNameError, noteContentError, noteFolderError, folders } = this.context;
+    const { name, content, folder } = this.state;
 
     return (
-        <form onSubmit={(e) => addNote(e, this.nameInput, this.contentInput, this.folderInput)} className='add-note'>
+        <form onSubmit={(e) => addNote(e, name, content, folder)} className='add-note'>
 
             <label>Note Name: </label>
-            <input type='text' className='text' ref={this.nameInput}></input>
+            <input type='text' className='text' onChange={e => this.updateName(e.target.value, content, folder )}></input>
             <div className='error'>{noteNameError}</div>
 
             <label>Content:</label>
-            <textarea className='content' ref={this.contentInput}></textarea>
+            <textarea className='content' onChange={e => this.updateName(name, e.target.value, folder)}></textarea>
             <div className='error'>{noteContentError}</div>
 
             <label>Folder: </label>
-            <select ref={this.folderInput}>
+            <select onChange={e => this.updateName(name, content, e.target.value)}>
+              <option disabled selected value> -- select a folder --</option>
               {folders.map(folder =>
                 <FolderMenu
                   name={folder.name}
