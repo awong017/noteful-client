@@ -121,7 +121,6 @@ class App extends Component {
 
             this.props.history.push('/');
         }
-        console.log('Notes: ', this.state.notes)
     }
 
     handleAddButton = () => {

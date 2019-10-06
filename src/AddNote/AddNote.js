@@ -36,9 +36,9 @@ class AddNote extends React.Component {
 
             <label>Folder: </label>
             <select onChange={e => this.updateName(name, content, e.target.value)}>
-              <option disabled selected value> -- select a folder --</option>
+              <option defaultValue> -- select a folder --</option>
               {folders.map(folder =>
-                <FolderMenu
+                <FolderMenu key={folder.id}
                   name={folder.name}
                   id={folder.id}
                 />
